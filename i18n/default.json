@@ -1,0 +1,9 @@
+{
+  "play.text1": "You have",
+  "play.text2": ". It costs",
+  "play.text3": "to play.",
+  "play.text4": "Start?",
+  "console-logging.name": "Logging",
+  "console-logging.tooltip1": "Toggle logging additional debug info to SMAPI console.",
+  "console-logging.tooltip2": "Default: false"
+}

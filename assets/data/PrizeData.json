@@ -1,0 +1,61 @@
+{
+  "Default": {
+    "CommonList": {
+      "Prizes": [
+        {
+          "Id": "DefaultOmniGeode",
+          "ItemId": "(O)749",
+          "MinStack": 2,
+          "MaxStack": 99
+        },
+        {
+          "ItemId": "(O)60",
+          "Condition": "SEASON summer"
+        },
+        {
+          "ItemId": "(O)167",
+          "Quality": 3
+        }
+      ]
+    },
+    "RareList": {
+      "Prizes": [
+        {
+          "ItemId": "(O)64",
+          "Quality": 3,
+          "Condition":  "SEASON spring summer"
+        }
+      ]
+    },
+    "DeluxeList": {
+      "Prizes": [
+        {
+          "ItemId": "(O)72",
+          "MinStack": 2,
+          "Quality": 1,
+          "Condition": "SEASON winter"
+        }
+      ]
+    },
+    "LeftSecretPrizes": [
+      {
+        "ItemId": "(O)74"
+      }
+    ],
+    "RightSecretPrizes": [
+      {
+        "ItemId": "(O)74"
+      }
+    ],
+    "LeftDecorationPrizes": [
+      {
+        "ItemId": "(F)986"
+      }
+    ],
+    "RightDecorationPrizes": [
+      {
+        "ItemId": "(F)989"
+      }
+    ]
+  }
+}
