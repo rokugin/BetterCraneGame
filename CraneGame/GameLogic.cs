@@ -7,7 +7,7 @@ using System.Xml.Serialization;
 using StardewValley.Extensions;
 using StardewModdingAPI;
 
-namespace CraneGameOverhaul {
+namespace CraneGameOverhaul.CraneGame {
     public class GameLogic : CraneGameObject {
         [XmlType("CraneGame.GameStates")]
         public enum GameStates {

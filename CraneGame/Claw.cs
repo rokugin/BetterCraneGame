@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using StardewValley;
 
-namespace CraneGameOverhaul {
+namespace CraneGameOverhaul.CraneGame {
     public class Claw : CraneGameObject {
         protected CraneGameObject _leftArm;
 

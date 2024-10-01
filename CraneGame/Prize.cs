@@ -2,7 +2,7 @@
 using StardewValley.ItemTypeDefinitions;
 using StardewValley;
 
-namespace CraneGameOverhaul {
+namespace CraneGameOverhaul.CraneGame {
     public class Prize : CraneGameObject {
         protected Vector2 _conveyorBeltMove;
 

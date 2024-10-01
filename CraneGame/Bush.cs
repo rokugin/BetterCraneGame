@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace CraneGameOverhaul {
+namespace CraneGameOverhaul.CraneGame {
     public class Bush : CraneGameObject {
         public Bush(CustomCraneGame game, int tile_index, int tile_width, int tile_height, int x, int y)
             : base(game) {

@@ -6,7 +6,7 @@ using StardewValley;
 namespace CraneGameOverhaul {
     internal static class AssetManager {
 
-        internal const string ModPrefix = "CGO";
+        internal const string ModId = "rokugin.cgo";
 
         static Lazy<Texture2D> craneGameTexture = new(() => Game1.content.Load<Texture2D>(craneGameSpriteSheet!.BaseName));
         static Lazy<Dictionary<string, PrizeDataModel>> prizeData = new(() =>
@@ -18,9 +18,9 @@ namespace CraneGameOverhaul {
         internal static IAssetName craneGameSpriteSheet { get; set; } = null!;
         internal static IAssetName prizeDataName { get; set; } = null!;
 
-        internal static void Initialize(IGameContentHelper parser) {
-            craneGameSpriteSheet = parser.ParseAssetName($"{ModPrefix}_CraneGame");
-            prizeDataName = parser.ParseAssetName($"Data/{ModPrefix}_PrizeData");
+        internal static void Init(IGameContentHelper parser) {
+            craneGameSpriteSheet = parser.ParseAssetName($"{ModId}/CraneGame");
+            prizeDataName = parser.ParseAssetName($"{ModId}/PrizeData");
         }
 
         internal static void OnAssetRequested(AssetRequestedEventArgs e) {

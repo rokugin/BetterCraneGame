@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace CraneGameOverhaul {
+namespace CraneGameOverhaul.CraneGame {
     public class ConveyorBelt : CraneGameObject {
         protected int _direction;
 

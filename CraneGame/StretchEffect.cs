@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using StardewValley;
 
-namespace CraneGameOverhaul {
+namespace CraneGameOverhaul.CraneGame {
     public class StretchEffect : DrawEffect {
         public Vector2 stretchScale;
 

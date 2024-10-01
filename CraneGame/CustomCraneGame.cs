@@ -7,7 +7,7 @@ using StardewValley.Menus;
 using StardewValley;
 using StardewValley.Minigames;
 
-namespace CraneGameOverhaul {
+namespace CraneGameOverhaul.CraneGame {
     public class CustomCraneGame : IMinigame {
 
         public int gameWidth = 304;

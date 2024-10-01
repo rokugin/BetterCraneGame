@@ -1,4 +1,4 @@
-﻿namespace CraneGameOverhaul {
+﻿namespace CraneGameOverhaul.CraneGame {
     public enum GameButtons {
         Action,
         Tool,
