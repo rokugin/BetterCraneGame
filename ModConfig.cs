@@ -1,7 +1,7 @@
-﻿namespace BetterCraneGame {
-    public class ModConfig {
+﻿namespace BetterCraneGame;
 
-        public bool Logging { get; set; } = false;
+public class ModConfig {
 
-    }
+    public bool Logging { get; set; } = false;
+
 }

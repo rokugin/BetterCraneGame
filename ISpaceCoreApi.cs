@@ -1,15 +1,15 @@
 ﻿using StardewValley;
 
-namespace BetterCraneGame {
-    public interface ISpaceCoreApi {
+namespace BetterCraneGame;
 
-        List<string> GetVirtualCurrencyList();
+public interface ISpaceCoreApi {
 
-        bool IsVirtualCurrencyTeamWide(string currency);
+    List<string> GetVirtualCurrencyList();
 
-        int GetVirtualCurrencyAmount(Farmer who, string currency);
+    bool IsVirtualCurrencyTeamWide(string currency);
 
-        void AddToVirtualCurrency(Farmer who, string currency, int amount);
+    int GetVirtualCurrencyAmount(Farmer who, string currency);
 
-    }
+    void AddToVirtualCurrency(Farmer who, string currency, int amount);
+
 }
