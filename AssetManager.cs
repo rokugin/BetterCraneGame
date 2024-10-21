@@ -1,43 +1,49 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using BetterCraneGame.DataModels;
+using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 
-namespace CraneGameOverhaul {
-    internal static class AssetManager {
+namespace BetterCraneGame;
 
-        internal const string ModId = "rokugin.cgo";
+internal static class AssetManager {
 
-        static Lazy<Texture2D> craneGameTexture = new(() => Game1.content.Load<Texture2D>(craneGameSpriteSheet!.BaseName));
-        static Lazy<Dictionary<string, PrizeDataModel>> prizeData = new(() =>
-            Game1.content.Load<Dictionary<string, PrizeDataModel>>(prizeDataName!.BaseName));
+    internal const string CraneGameTextureName = "rokugin.BCG/DefaultTexture";
+    internal const string CraneGameDataName = "rokugin.BCG/CraneGame";
+    internal const string PrizeDataName = "rokugin.BCG/PrizeData";
 
-        internal static Texture2D CraneGameTexture => craneGameTexture.Value;
-        internal static Dictionary<string, PrizeDataModel> PrizeData => prizeData.Value;
+    internal static Texture2D CraneGameTexture = null!;
+    internal static Dictionary<string, PrizeDataModel> PrizeData = new();
+    internal static Dictionary<string, CraneGameDataModel> CraneGameData = new();
 
-        internal static IAssetName craneGameSpriteSheet { get; set; } = null!;
-        internal static IAssetName prizeDataName { get; set; } = null!;
-
-        internal static void Init(IGameContentHelper parser) {
-            craneGameSpriteSheet = parser.ParseAssetName($"{ModId}/CraneGame");
-            prizeDataName = parser.ParseAssetName($"{ModId}/PrizeData");
+    internal static void OnAssetRequested(AssetRequestedEventArgs e) {
+        if (e.NameWithoutLocale.IsEquivalentTo(CraneGameTextureName)) {
+            e.LoadFromModFile<Texture2D>("assets/textures/CraneGame.png", AssetLoadPriority.Medium);
         }
-
-        internal static void OnAssetRequested(AssetRequestedEventArgs e) {
-            if (e.Name.IsEquivalentTo(craneGameSpriteSheet)) {
-                e.LoadFromModFile<Texture2D>("assets/textures/CraneGame.png", AssetLoadPriority.Exclusive);
-            }
-            if (e.Name.IsEquivalentTo(prizeDataName)) {
-                e.LoadFromModFile<Dictionary<string, PrizeDataModel>>("assets/data/PrizeData.json", AssetLoadPriority.Medium);
-            }
+        if (e.NameWithoutLocale.IsEquivalentTo(PrizeDataName)) {
+            e.LoadFromModFile<Dictionary<string, PrizeDataModel>>("assets/data/PrizeData.json", AssetLoadPriority.Medium);
         }
-
-        internal static void Reset(IReadOnlySet<IAssetName>? assets = null) {
-            if ((assets is null || assets.Contains(craneGameSpriteSheet)) && craneGameTexture.IsValueCreated) {
-                craneGameTexture = new(() => Game1.content.Load<Texture2D>(craneGameSpriteSheet.BaseName));
-                prizeData = new(() => Game1.content.Load<Dictionary<string, PrizeDataModel>>(prizeDataName.BaseName));
-            }
+        if (e.NameWithoutLocale.IsEquivalentTo(CraneGameDataName)) {
+            e.LoadFromModFile<Dictionary<string, CraneGameDataModel>>("assets/data/CraneGameData.json", AssetLoadPriority.Medium);
         }
-
     }
+
+    internal static void OnAssetReady(AssetReadyEventArgs e) {
+        if (e.NameWithoutLocale.IsEquivalentTo(CraneGameTextureName)) {
+            CraneGameTexture = Game1.content.Load<Texture2D>(CraneGameTextureName);
+        }
+        if (e.NameWithoutLocale.IsEquivalentTo(PrizeDataName)) {
+            PrizeData = Game1.content.Load<Dictionary<string, PrizeDataModel>>(PrizeDataName);
+        }
+        if (e.NameWithoutLocale.IsEquivalentTo(CraneGameDataName)) {
+            CraneGameData = Game1.content.Load<Dictionary<string, CraneGameDataModel>>(CraneGameDataName);
+        }
+    }
+
+    internal static void OnSaveLoaded(SaveLoadedEventArgs e) {
+        CraneGameTexture = Game1.content.Load<Texture2D>(CraneGameTextureName);
+        PrizeData = Game1.content.Load<Dictionary<string, PrizeDataModel>>(PrizeDataName);
+        CraneGameData = Game1.content.Load<Dictionary<string, CraneGameDataModel>>(CraneGameDataName);
+    }
+
 }

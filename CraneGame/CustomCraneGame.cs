@@ -7,7 +7,7 @@ using StardewValley.Menus;
 using StardewValley;
 using StardewValley.Minigames;
 
-namespace CraneGameOverhaul.CraneGame {
+namespace BetterCraneGame.CraneGame {
     public class CustomCraneGame : IMinigame {
 
         public int gameWidth = 304;
@@ -57,6 +57,10 @@ namespace CraneGameOverhaul.CraneGame {
             for (int i = 0; i < 9; i++) {
                 this._buttonStates[(GameButtons)i] = 0;
             }
+        }
+
+        public CustomCraneGame(Texture2D texture) : this() {
+            spriteSheet = texture;
         }
 
         public void Quit() {

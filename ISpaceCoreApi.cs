@@ -1,6 +1,6 @@
 ﻿using StardewValley;
 
-namespace CraneGameOverhaul {
+namespace BetterCraneGame {
     public interface ISpaceCoreApi {
 
         List<string> GetVirtualCurrencyList();

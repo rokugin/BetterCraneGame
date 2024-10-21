@@ -1,0 +1,12 @@
+{
+  "Default": {
+    "Texture": null,
+    "Currency": "coins",
+    "Cost": 500,
+    "CurrencyDisplayName": null,
+    "PlayTime": 20,
+    "Credits": 3,
+    "LeftPrizeChance": 0.1,
+    "RightPrizeChance": 0.2
+  }
+}

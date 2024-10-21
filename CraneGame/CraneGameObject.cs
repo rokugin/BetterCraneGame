@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 
-namespace CraneGameOverhaul.CraneGame {
+namespace BetterCraneGame.CraneGame {
     public class CraneGameObject {
         protected CustomCraneGame _game;
 

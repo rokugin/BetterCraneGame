@@ -1,15 +1,16 @@
 {
   "$schema": "https://smapi.io/schemas/manifest.json",
-  "Name": "Crane Game Overhaul",
+  "Name": "Better Crane Game",
   "Author": "rokugin",
   "Version": "1.0.0",
-  "Description": "Adds custom crane minigame.",
-  "UniqueID": "rokugin.cgo",
-  "EntryDll": "CraneGameOverhaul.dll",
+  "Description": "Adds a crane game tile action with customizable prices, credits, play time, and prizes.",
+  "UniqueID": "rokugin.BCG",
+  "EntryDll": "BetterCraneGame.dll",
   "UpdateKeys": [],
   "Dependencies": [
     {
-      "UniqueID": "spacechase0.SpaceCore"
+      "UniqueID": "spacechase0.SpaceCore",
+      "IsRequired": true
     }
   ]
 }

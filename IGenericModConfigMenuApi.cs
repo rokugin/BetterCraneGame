@@ -4,7 +4,7 @@ using StardewModdingAPI;
 using StardewValley;
 using Microsoft.Xna.Framework;
 
-namespace CraneGameOverhaul {
+namespace BetterCraneGame {
     public interface IGenericModConfigMenuApi {
         /*********
         ** Methods

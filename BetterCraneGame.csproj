@@ -14,10 +14,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="assets\" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.2.0" />
 		<PackageReference Include="System.Reflection.Metadata" Version="8.0.0" />
 	</ItemGroup>

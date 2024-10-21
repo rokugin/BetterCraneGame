@@ -1,6 +1,6 @@
 ﻿using StardewModdingAPI;
 
-namespace CraneGameOverhaul;
+namespace BetterCraneGame;
 
 internal static class Logger {
 

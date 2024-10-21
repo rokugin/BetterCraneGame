@@ -1,4 +1,4 @@
-﻿namespace CraneGameOverhaul.CraneGame {
+﻿namespace BetterCraneGame.CraneGame {
     public class Trampoline : CraneGameObject {
         public Trampoline(CustomCraneGame game, int x, int y)
             : base(game) {
