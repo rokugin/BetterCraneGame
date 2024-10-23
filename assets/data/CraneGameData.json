@@ -1,11 +1,14 @@
 {
   "Default": {
     "Texture": null,
-    "Currency": "coins",
+    "MusicCue": null,
+    "FastMusicCue": null,
+    "Currency": null,
     "Cost": 500,
     "CurrencyDisplayName": null,
     "PlayTime": 20,
     "Credits": 3,
+    "PrizeDataEntry": null,
     "LeftPrizeChance": 0.1,
     "RightPrizeChance": 0.2
   }

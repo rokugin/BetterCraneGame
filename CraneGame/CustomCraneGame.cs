@@ -43,12 +43,12 @@ public class CustomCraneGame : IMinigame {
 
     public Dictionary<Type, List<CraneGameObject>> _gameObjectsByType;
 
-    public CustomCraneGame() {
-        Utility.farmerHeardSong(Game1.soundBank.Exists("BCG_crane_game") ? "BCG_crane_game" : "crane_game");
-        Utility.farmerHeardSong(Game1.soundBank.Exists("BCG_crane_game_fast") ? "BCG_crane_game_fast" : "crane_game_fast");
+    public CustomCraneGame(Texture2D texture) {
+        Utility.farmerHeardSong(music?.Name);// Game1.soundBank.Exists("BCG_crane_game") ? "BCG_crane_game" : "crane_game");
+        Utility.farmerHeardSong(fastMusic?.Name);// Game1.soundBank.Exists("BCG_crane_game_fast") ? "BCG_crane_game_fast" : "crane_game_fast");
         this._effect = Game1.content.Load<Effect>("Effects\\ShadowRemoveMG3.8.0");
         this._content = Game1.content.CreateTemporary();
-        this.spriteSheet = AssetManager.CraneGameTexture;
+        this.spriteSheet = texture;
         this._buttonStates = new Dictionary<GameButtons, int>();
         this._gameObjects = new List<CraneGameObject>();
         this._gameObjectTypes = new List<Type>();
@@ -58,10 +58,6 @@ public class CustomCraneGame : IMinigame {
         for (int i = 0; i < 9; i++) {
             this._buttonStates[(GameButtons)i] = 0;
         }
-    }
-
-    public CustomCraneGame(Texture2D texture) : this() {
-        spriteSheet = texture;
     }
 
     public void Quit() {

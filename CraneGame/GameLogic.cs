@@ -5,8 +5,8 @@ using StardewValley.Menus;
 using StardewValley;
 using System.Xml.Serialization;
 using StardewValley.Extensions;
-using StardewModdingAPI;
 using BetterCraneGame.DataModels;
+using Microsoft.Xna.Framework.Input;
 
 namespace BetterCraneGame.CraneGame;
 
@@ -26,8 +26,8 @@ public class GameLogic : CraneGameObject {
         EndGame
     }
 
-    public string musicCue => Game1.soundBank.Exists("BCG_crane_game") ? "BCG_crane_game" : "crane_game";
-    public string fastMusicCue => Game1.soundBank.Exists("BCG_crane_game_fast") ? "BCG_crane_game_fast" : "crane_game_fast";
+    public string musicCue => Game1.soundBank.Exists(ModEntry.MusicCue) ? ModEntry.MusicCue : "crane_game";
+    public string fastMusicCue => Game1.soundBank.Exists(ModEntry.FastMusicCue) ? ModEntry.FastMusicCue : "crane_game_fast";
 
     public List<Item> collectedItems;
 
@@ -35,9 +35,9 @@ public class GameLogic : CraneGameObject {
 
     protected Claw _claw;
 
-    public int maxLives = ModEntry.credits;
+    public int maxLives = ModEntry.Credits;
 
-    public int lives = ModEntry.credits;
+    public int lives = ModEntry.Credits;
 
     public Vector2 _startPosition = new Vector2(24f, 56f);
 
@@ -187,10 +187,27 @@ public class GameLogic : CraneGameObject {
         // Set up items list
         Dictionary<int, List<Item>> possible_items = new Dictionary<int, List<Item>>();
         Dictionary<string, PrizeDataModel> prizeData = AssetManager.PrizeData;
+        bool fullPrizeList = ModEntry.PrizeDataKey == null;
         List<Item> item_list = new();
 
-        foreach (var key in prizeData.Keys) {
-            if (prizeData.TryGetValue(key, out PrizeDataModel? data)) {
+        if (fullPrizeList) {
+            foreach (var key in prizeData.Keys) {
+                if (prizeData.TryGetValue(key, out PrizeDataModel? data)) {
+                    if (data.CommonList != null && data.CommonList.Prizes != null) {
+                        foreach (ItemField item in data.CommonList.Prizes) {
+                            int amount = item.MaxStack > item.MinStack ? Game1.random.Next(item.MinStack, item.MaxStack + 1) : item.MinStack;
+                            if (item.Condition != null) {
+                                if (!GameStateQuery.CheckConditions(item.Condition, Game1.currentLocation, Game1.player, null, null, null, null)) {
+                                    continue;
+                                }
+                            }
+                            item_list.Add(ItemRegistry.Create(item.ItemId, amount, item.Quality));
+                        }
+                    }
+                }
+            }
+        } else {
+            if (prizeData.TryGetValue(ModEntry.PrizeDataKey!, out PrizeDataModel? data)) {
                 if (data.CommonList != null && data.CommonList.Prizes != null) {
                     foreach (ItemField item in data.CommonList.Prizes) {
                         int amount = item.MaxStack > item.MinStack ? Game1.random.Next(item.MinStack, item.MaxStack + 1) : item.MinStack;
@@ -207,8 +224,24 @@ public class GameLogic : CraneGameObject {
         possible_items[1] = item_list;
 
         item_list = new();
-        foreach (var key in prizeData.Keys) {
-            if (prizeData.TryGetValue(key, out PrizeDataModel? data)) {
+        if (fullPrizeList) {
+            foreach (var key in prizeData.Keys) {
+                if (prizeData.TryGetValue(key, out PrizeDataModel? data)) {
+                    if (data.RareList != null && data.RareList.Prizes != null) {
+                        foreach (ItemField item in data.RareList.Prizes) {
+                            int amount = item.MaxStack > item.MinStack ? Game1.random.Next(item.MinStack, item.MaxStack + 1) : item.MinStack;
+                            if (item.Condition != null) {
+                                if (!GameStateQuery.CheckConditions(item.Condition, Game1.currentLocation, Game1.player, null, null, null, null)) {
+                                    continue;
+                                }
+                            }
+                            item_list.Add(ItemRegistry.Create(item.ItemId, amount, item.Quality));
+                        }
+                    }
+                }
+            }
+        } else {
+            if (prizeData.TryGetValue(ModEntry.PrizeDataKey!, out PrizeDataModel? data)) {
                 if (data.RareList != null && data.RareList.Prizes != null) {
                     foreach (ItemField item in data.RareList.Prizes) {
                         int amount = item.MaxStack > item.MinStack ? Game1.random.Next(item.MinStack, item.MaxStack + 1) : item.MinStack;
@@ -225,8 +258,24 @@ public class GameLogic : CraneGameObject {
         possible_items[2] = item_list;
 
         item_list = new();
-        foreach (var key in prizeData.Keys) {
-            if (prizeData.TryGetValue(key, out PrizeDataModel? data)) {
+        if (fullPrizeList) {
+            foreach (var key in prizeData.Keys) {
+                if (prizeData.TryGetValue(key, out PrizeDataModel? data)) {
+                    if (data.DeluxeList != null && data.DeluxeList.Prizes != null) {
+                        foreach (ItemField item in data.DeluxeList.Prizes) {
+                            int amount = item.MaxStack > item.MinStack ? Game1.random.Next(item.MinStack, item.MaxStack + 1) : item.MinStack;
+                            if (item.Condition != null) {
+                                if (!GameStateQuery.CheckConditions(item.Condition, Game1.currentLocation, Game1.player, null, null, null, null)) {
+                                    continue;
+                                }
+                            }
+                            item_list.Add(ItemRegistry.Create(item.ItemId, amount, item.Quality));
+                        }
+                    }
+                }
+            }
+        } else {
+            if (prizeData.TryGetValue(ModEntry.PrizeDataKey!, out PrizeDataModel? data)) {
                 if (data.DeluxeList != null && data.DeluxeList.Prizes != null) {
                     foreach (ItemField item in data.DeluxeList.Prizes) {
                         int amount = item.MaxStack > item.MinStack ? Game1.random.Next(item.MinStack, item.MaxStack + 1) : item.MinStack;
@@ -265,14 +314,32 @@ public class GameLogic : CraneGameObject {
         }
 
         // Secret items spawn
-        Item? secretItem = null;
+        Item? secretItemLeft = null;
+        Item? secretItemRight = null;
         Vector2 offset = new Vector2(0f, 4f);
-        Vector2 prizePosition = new();
+        Vector2 prizePositionLeft = new();
+        Vector2 prizePositionRight = new();
 
-        if (Game1.random.NextDouble() < ModEntry.leftChance) {
+        if (Game1.random.NextDouble() < ModEntry.LeftChance) {
             item_list = new();
-            foreach (var key in prizeData.Keys) {
-                if (prizeData.TryGetValue(key, out PrizeDataModel? data)) {
+            if (fullPrizeList) {
+                foreach (var key in prizeData.Keys) {
+                    if (prizeData.TryGetValue(key, out PrizeDataModel? data)) {
+                        if (data.LeftSecretPrizes != null) {
+                            foreach (ItemField item in data.LeftSecretPrizes) {
+                                int amount = item.MaxStack > item.MinStack ? Game1.random.Next(item.MinStack, item.MaxStack + 1) : item.MinStack;
+                                if (item.Condition != null) {
+                                    if (!GameStateQuery.CheckConditions(item.Condition, Game1.currentLocation, Game1.player, null, null, null, null)) {
+                                        continue;
+                                    }
+                                }
+                                item_list.Add(ItemRegistry.Create(item.ItemId, amount, item.Quality));
+                            }
+                        }
+                    }
+                }
+            } else {
+                if (prizeData.TryGetValue(ModEntry.PrizeDataKey!, out PrizeDataModel? data)) {
                     if (data.LeftSecretPrizes != null) {
                         foreach (ItemField item in data.LeftSecretPrizes) {
                             int amount = item.MaxStack > item.MinStack ? Game1.random.Next(item.MinStack, item.MaxStack + 1) : item.MinStack;
@@ -286,12 +353,29 @@ public class GameLogic : CraneGameObject {
                     }
                 }
             }
-            secretItem = Game1.random.ChooseFrom(item_list);
-            prizePosition = new Vector2(offset.X * 16f + 30f, offset.Y * 16f + 32f); // in front of the prize bucket, behind the large bush
-        } else if (Game1.random.NextDouble() < ModEntry.rightChance) {
+            secretItemLeft = Game1.random.ChooseFrom(item_list);
+            prizePositionLeft = new Vector2(offset.X * 16f + 30f, offset.Y * 16f + 32f); // in front of the prize bucket, behind the large bush
+        }
+        if (Game1.random.NextDouble() < ModEntry.RightChance) {
             item_list = new();
-            foreach (var key in prizeData.Keys) {
-                if (prizeData.TryGetValue(key, out PrizeDataModel? data)) {
+            if (fullPrizeList) {
+                foreach (var key in prizeData.Keys) {
+                    if (prizeData.TryGetValue(key, out PrizeDataModel? data)) {
+                        if (data.RightSecretPrizes != null) {
+                            foreach (ItemField item in data.RightSecretPrizes) {
+                                int amount = item.MaxStack > item.MinStack ? Game1.random.Next(item.MinStack, item.MaxStack + 1) : item.MinStack;
+                                if (item.Condition != null) {
+                                    if (!GameStateQuery.CheckConditions(item.Condition, Game1.currentLocation, Game1.player, null, null, null, null)) {
+                                        continue;
+                                    }
+                                }
+                                item_list.Add(ItemRegistry.Create(item.ItemId, amount, item.Quality));
+                            }
+                        }
+                    }
+                }
+            } else {
+                if (prizeData.TryGetValue(ModEntry.PrizeDataKey!, out PrizeDataModel? data)) {
                     if (data.RightSecretPrizes != null) {
                         foreach (ItemField item in data.RightSecretPrizes) {
                             int amount = item.MaxStack > item.MinStack ? Game1.random.Next(item.MinStack, item.MaxStack + 1) : item.MinStack;
@@ -305,19 +389,38 @@ public class GameLogic : CraneGameObject {
                     }
                 }
             }
-            secretItem = Game1.random.ChooseFrom(item_list);
-            prizePosition = new Vector2(160f, 58f); // middle divider area, behind medium bush
+            secretItemRight = Game1.random.ChooseFrom(item_list);
+            prizePositionRight = new Vector2(160f, 58f); // middle divider area, behind medium bush
         }
-        if (secretItem != null) {
-            new Prize(base._game, secretItem) { position = prizePosition };
+        if (secretItemLeft != null) {
+            new Prize(base._game, secretItemLeft) { position = prizePositionLeft };
+        }
+        if (secretItemRight != null) {
+            new Prize(_game, secretItemRight) { position = prizePositionRight };
         }
 
         //Add items as set dressing
         Item? decorationItem;
 
         item_list = new();
-        foreach (var key in prizeData.Keys) {
-            if (prizeData.TryGetValue(key, out PrizeDataModel? data)) {
+        if (fullPrizeList) {
+            foreach (var key in prizeData.Keys) {
+                if (prizeData.TryGetValue(key, out PrizeDataModel? data)) {
+                    if (data.LeftDecorationPrizes != null) {
+                        foreach (ItemField item in data.LeftDecorationPrizes) {
+                            int amount = item.MaxStack > item.MinStack ? Game1.random.Next(item.MinStack, item.MaxStack + 1) : item.MinStack;
+                            if (item.Condition != null) {
+                                if (!GameStateQuery.CheckConditions(item.Condition, Game1.currentLocation, Game1.player, null, null, null, null)) {
+                                    continue;
+                                }
+                            }
+                            item_list.Add(ItemRegistry.Create(item.ItemId, amount, item.Quality));
+                        }
+                    }
+                }
+            }
+        } else {
+            if (prizeData.TryGetValue(ModEntry.PrizeDataKey!, out PrizeDataModel? data)) {
                 if (data.LeftDecorationPrizes != null) {
                     foreach (ItemField item in data.LeftDecorationPrizes) {
                         int amount = item.MaxStack > item.MinStack ? Game1.random.Next(item.MinStack, item.MaxStack + 1) : item.MinStack;
@@ -338,8 +441,24 @@ public class GameLogic : CraneGameObject {
         }
 
         item_list = new();
-        foreach (var key in prizeData.Keys) {
-            if (prizeData.TryGetValue(key, out PrizeDataModel? data)) {
+        if (fullPrizeList) {
+            foreach (var key in prizeData.Keys) {
+                if (prizeData.TryGetValue(key, out PrizeDataModel? data)) {
+                    if (data.RightDecorationPrizes != null) {
+                        foreach (ItemField item in data.RightDecorationPrizes) {
+                            int amount = item.MaxStack > item.MinStack ? Game1.random.Next(item.MinStack, item.MaxStack + 1) : item.MinStack;
+                            if (item.Condition != null) {
+                                if (!GameStateQuery.CheckConditions(item.Condition, Game1.currentLocation, Game1.player, null, null, null, null)) {
+                                    continue;
+                                }
+                            }
+                            item_list.Add(ItemRegistry.Create(item.ItemId, amount, item.Quality));
+                        }
+                    }
+                }
+            }
+        } else {
+            if (prizeData.TryGetValue(ModEntry.PrizeDataKey!, out PrizeDataModel? data)) {
                 if (data.RightDecorationPrizes != null) {
                     foreach (ItemField item in data.RightDecorationPrizes) {
                         int amount = item.MaxStack > item.MinStack ? Game1.random.Next(item.MinStack, item.MaxStack + 1) : item.MinStack;
@@ -415,7 +534,7 @@ public class GameLogic : CraneGameObject {
                     base._game.fastMusic.Stop(AudioStopOptions.Immediate);
                     base._game.fastMusic = Game1.soundBank.GetCue(fastMusicCue);
                 }
-                this.currentTimer = ModEntry.playTime * 60;
+                this.currentTimer = ModEntry.PlayTime * 60;
                 this.moveRightIndicator.visible = Game1.ticks / 20 % 2 == 0;
                 if (base._game.IsButtonPressed(GameButtons.Tool) || base._game.IsButtonPressed(GameButtons.Action) || base._game.IsButtonPressed(GameButtons.Right)) {
                     Game1.playSound("bigSelect");

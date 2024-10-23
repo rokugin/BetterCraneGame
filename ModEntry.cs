@@ -14,15 +14,18 @@ internal class ModEntry : Mod {
     public static ModConfig Config = new ModConfig();
     public static ISpaceCoreApi SpaceCoreApi = null!;
 
-    int playCost = new();
-    public string currency = null!;
-    public string currencyDisplayName = null!;
-    public bool virtualCurrency;
-    public static int playTime = new();
-    public static int credits = new();
-    public static float leftChance = new();
-    public static float rightChance = new();
-    public static Texture2D CraneGameTexture = null!;
+    int playCost = 500;
+    string currency = "coins";
+    string currencyDisplayName = null!;
+    bool virtualCurrency;
+    public static int PlayTime = 2;
+    public static int Credits = 3;
+    public static float LeftChance = 0.1f;
+    public static float RightChance = 0.2f;
+    public static Texture2D CraneGameTexture = AssetManager.CraneGameTexture;
+    public static string MusicCue = "crane_game";
+    public static string FastMusicCue = "crane_game_fast";
+    public static string PrizeDataKey = null!;
 
     public override void Entry(IModHelper helper) {
         Config = helper.ReadConfig<ModConfig>();
@@ -32,7 +35,7 @@ internal class ModEntry : Mod {
         helper.Events.GameLoop.GameLaunched += OnGameLaunched;
         helper.Events.Content.AssetRequested += static (_, e) => AssetManager.OnAssetRequested(e);
         helper.Events.Content.AssetReady += static (_, e) => AssetManager.OnAssetReady(e);
-        helper.Events.GameLoop.SaveLoaded += static (_, e) => AssetManager.OnSaveLoaded(e);
+        helper.Events.GameLoop.GameLaunched += static (_, e) => AssetManager.OnGameLaunched(e);
 
         GameLocation.RegisterTileAction("BetterCraneGame", HandleCraneGame);
     }
@@ -43,38 +46,39 @@ internal class ModEntry : Mod {
     }
 
     private bool HandleCraneGame(GameLocation location, string[] args, Farmer farmer, Point point) {
+        Helper.GameContent.InvalidateCache(AssetManager.CraneGameDataName);
+        Helper.GameContent.InvalidateCache(AssetManager.PrizeDataName);
+        AssetManager.PrizeData = Game1.content.Load<Dictionary<string, PrizeDataModel>>(AssetManager.PrizeDataName);
+        AssetManager.CraneGameData = Game1.content.Load<Dictionary<string, CraneGameDataModel>>(AssetManager.CraneGameDataName);
         CraneGameTexture = null!;
         AssetManager.CraneGameData.TryGetValue(args[1], out CraneGameDataModel? data);
 
         if (data != null) {
-            playCost = data.Cost;
+            playCost = Math.Max(data.Cost, 0);
             currency = data.Currency ?? "coins";
             currencyDisplayName = data.CurrencyDisplayName ?? currency;
-            playTime = data.PlayTime;
-            credits = data.Credits;
-            leftChance = data.LeftPrizeChance;
-            rightChance = data.RightPrizeChance;
-            CraneGameTexture = Game1.content.Load<Texture2D>(data.Texture) ?? AssetManager.CraneGameTexture;
-        } else {
-            playCost = 500;
-            currency = "coins";
-            currencyDisplayName = currency;
-            playTime = 20;
-            credits = 3;
-            leftChance = 0.1f;
-            rightChance = 0.2f;
-            CraneGameTexture = AssetManager.CraneGameTexture;
+            PlayTime = data.PlayTime;
+            Credits = data.Credits;
+            LeftChance = data.LeftPrizeChance;
+            RightChance = data.RightPrizeChance;
+            CraneGameTexture = data.Texture != null ? Game1.content.Load<Texture2D>(data.Texture) : AssetManager.CraneGameTexture;
+            MusicCue = data.MusicCue != null ? data.MusicCue : "crane_game";
+            FastMusicCue = data.FastMusicCue != null ? data.FastMusicCue : "crane_game_fast";
+            PrizeDataKey = data.PrizeDataEntry!;
         }
-        
-        Math.Max(playCost, 0);
-        Logger.Log($"\nPlay cost: {playCost}");
         virtualCurrency = currency == "coins" ? false : true;
+
+        Logger.Log($"\nTexture: {CraneGameTexture.Name}");
+        Logger.Log($"\nMusic cue: {MusicCue}");
+        Logger.Log($"\nFast music cue: {FastMusicCue}");
+        Logger.Log($"\nPlay cost: {playCost}");
         Logger.Log($"\nCurrency: {currency}");
         Logger.Log($"\nCurrency display name: {currencyDisplayName}");
-        Logger.Log($"\nPlay time: {playTime}");
-        Logger.Log($"\nCredits: {credits}");
-        Logger.Log($"\nLeft hidden prize chance: {leftChance}");
-        Logger.Log($"\nRight hidden prize chance: {rightChance}\n");
+        Logger.Log($"\nPlay time: {PlayTime}");
+        Logger.Log($"\nCredits: {Credits}");
+        Logger.Log($"\nPrize data key: {PrizeDataKey}");
+        Logger.Log($"\nLeft hidden prize chance: {LeftChance}");
+        Logger.Log($"\nRight hidden prize chance: {RightChance}\n");
 
         var funds = virtualCurrency ? SpaceCoreApi.GetVirtualCurrencyAmount(farmer, currency) : farmer.Money;
         bool canAfford = funds >= playCost;

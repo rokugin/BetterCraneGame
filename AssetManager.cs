@@ -8,7 +8,7 @@ namespace BetterCraneGame;
 internal static class AssetManager {
 
     internal const string CraneGameTextureName = "rokugin.BCG/DefaultTexture";
-    internal const string CraneGameDataName = "rokugin.BCG/CraneGame";
+    internal const string CraneGameDataName = "rokugin.BCG/CraneGameData";
     internal const string PrizeDataName = "rokugin.BCG/PrizeData";
 
     internal static Texture2D CraneGameTexture = null!;
@@ -39,10 +39,9 @@ internal static class AssetManager {
         }
     }
 
-    internal static void OnSaveLoaded(SaveLoadedEventArgs e) {
+    internal static void OnGameLaunched(GameLaunchedEventArgs e) {
         CraneGameTexture = Game1.content.Load<Texture2D>(CraneGameTextureName);
         PrizeData = Game1.content.Load<Dictionary<string, PrizeDataModel>>(PrizeDataName);
         CraneGameData = Game1.content.Load<Dictionary<string, CraneGameDataModel>>(CraneGameDataName);
     }
-
 }
