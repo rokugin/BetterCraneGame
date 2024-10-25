@@ -25,10 +25,10 @@ Other:
 BCG adds the `BetterCraneGame [CraneGameDataEntryKey]` tile action.
 - `CraneGameDataEntryKey` refers to an entry in the `rokugin.BCG/CraneGameData` asset. Not setting this will use all default values.
 
-The tile action can be added to a map either via Tiled or CP.<br>
+The tile action can be added to a map either via Tiled or CP, make sure it's on the Buildings object layer and that there's a tile on the Buildings tile layer.<br>
 
-Tiled:<br>
-<!-- ![Screenshot of the tile action in Tiled]() -->
+[Tiled](https://stardewvalleywiki.com/Modding:Maps#Tile_properties):<br>
+![Screenshot of the tile action in Tiled](screenshots/tile-action-tiled.png)
 
 
 CP with the [EditMap Action](https://github.com/Pathoschild/StardewMods/blob/develop/ContentPatcher/docs/author-guide/action-editmap.md):
