@@ -1,14 +1,14 @@
 {
   "Default": {
-    "Texture": null,
-    "MusicCue": null,
-    "FastMusicCue": null,
-    "Currency": null,
+    "Texture": "rokugin.BCG/DefaultTexture",
+    "MusicCue": "crane_game",
+    "FastMusicCue": "crane_game_fast",
+    "Currency": "coins",
     "Cost": 500,
-    "CurrencyDisplayName": null,
+    "CurrencyDisplayName": "coins",
     "PlayTime": 20,
     "Credits": 3,
-    "PrizeDataEntry": null,
+    "PrizeDataEntry": "Default",
     "LeftPrizeChance": 0.1,
     "RightPrizeChance": 0.2
   }

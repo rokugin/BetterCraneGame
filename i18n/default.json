@@ -1,8 +1,10 @@
 {
-  "play.text1": "You have",
-  "play.text2": ". It costs",
-  "play.text3": "to play.",
-  "play.text4": "Start?",
+  "play-virtual.text": "It costs {{cost}} {{currency}} to play. You have {{amount}}. Start?", // don't translate {{cost}} or {{currency}}, can be moved to make sense
+  "play-virtual-unaffordable.text": "It costs {{cost}} {{currency}} to play. You have {{amount}}. Not enough {{currency}} to start.", // don't translate {{cost}} or {{currency}}, can be moved to make sense
+  "play.text1": "It costs {{cost}} to play. Start?", // don't translate {{cost}}, can be moved to make sense
+  "play.text2": "It costs {{cost}} {{currency}} to play. Start?", // don't translate {{cost}} or {{currency}}, can be moved to make sense
+  "play-unaffordable.text1": "It costs {{cost}} to play. Not enough money to start.", // don't translate {{cost}}, can be moved to make sense
+  "play-unaffordable.text2": "It costs {{cost}} {{currency}} to play. Not enough {{currency}} to start.", // don't translate {{cost}} or {{currency}}, can be moved to make sense
   "console-logging.name": "Logging",
   "console-logging.tooltip1": "Toggle logging additional debug info to SMAPI console.",
   "console-logging.tooltip2": "Default: false"

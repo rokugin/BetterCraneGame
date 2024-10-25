@@ -11,18 +11,18 @@ namespace BetterCraneGame;
 
 internal class ModEntry : Mod {
 
-    public static ModConfig Config = new ModConfig();
+    public static ModConfig Config = new();
     public static ISpaceCoreApi SpaceCoreApi = null!;
 
     int playCost = 500;
     string currency = "coins";
-    string currencyDisplayName = null!;
+    string currencyDisplayName = "coins";
     bool virtualCurrency;
     public static int PlayTime = 2;
     public static int Credits = 3;
     public static float LeftChance = 0.1f;
     public static float RightChance = 0.2f;
-    public static Texture2D CraneGameTexture = AssetManager.CraneGameTexture;
+    Texture2D CraneGameTexture = AssetManager.CraneGameTexture;
     public static string MusicCue = "crane_game";
     public static string FastMusicCue = "crane_game_fast";
     public static string PrizeDataKey = null!;
@@ -36,7 +36,7 @@ internal class ModEntry : Mod {
         helper.Events.Content.AssetRequested += static (_, e) => AssetManager.OnAssetRequested(e);
         helper.Events.Content.AssetReady += static (_, e) => AssetManager.OnAssetReady(e);
         helper.Events.GameLoop.GameLaunched += static (_, e) => AssetManager.OnGameLaunched(e);
-
+        
         GameLocation.RegisterTileAction("BetterCraneGame", HandleCraneGame);
     }
 
@@ -50,25 +50,40 @@ internal class ModEntry : Mod {
         Helper.GameContent.InvalidateCache(AssetManager.PrizeDataName);
         AssetManager.PrizeData = Game1.content.Load<Dictionary<string, PrizeDataModel>>(AssetManager.PrizeDataName);
         AssetManager.CraneGameData = Game1.content.Load<Dictionary<string, CraneGameDataModel>>(AssetManager.CraneGameDataName);
-        CraneGameTexture = null!;
-        AssetManager.CraneGameData.TryGetValue(args[1], out CraneGameDataModel? data);
+        
+        playCost = 500;
+        currency = "coins";
+        currencyDisplayName = null!;
+        virtualCurrency = false;
+        PlayTime = 2;
+        Credits = 3;
+        LeftChance = 0.1f;
+        RightChance = 0.2f;
+        CraneGameTexture = AssetManager.CraneGameTexture;
+        MusicCue = "crane_game";
+        FastMusicCue = "crane_game_fast";
+        PrizeDataKey = null!;
 
-        if (data != null) {
-            playCost = Math.Max(data.Cost, 0);
-            currency = data.Currency ?? "coins";
-            currencyDisplayName = data.CurrencyDisplayName ?? currency;
-            PlayTime = data.PlayTime;
-            Credits = data.Credits;
-            LeftChance = data.LeftPrizeChance;
-            RightChance = data.RightPrizeChance;
-            CraneGameTexture = data.Texture != null ? Game1.content.Load<Texture2D>(data.Texture) : AssetManager.CraneGameTexture;
-            MusicCue = data.MusicCue != null ? data.MusicCue : "crane_game";
-            FastMusicCue = data.FastMusicCue != null ? data.FastMusicCue : "crane_game_fast";
-            PrizeDataKey = data.PrizeDataEntry!;
+        if (args.Length > 1) {
+            AssetManager.CraneGameData.TryGetValue(args[1], out CraneGameDataModel? data);
+
+            if (data != null) {
+                playCost = Math.Max(data.Cost, 0);
+                currency = data.Currency ?? "coins";
+                currencyDisplayName = data.CurrencyDisplayName!;
+                PlayTime = data.PlayTime;
+                Credits = data.Credits;
+                LeftChance = data.LeftPrizeChance;
+                RightChance = data.RightPrizeChance;
+                CraneGameTexture = data.Texture != null ? Game1.content.Load<Texture2D>(data.Texture) : AssetManager.CraneGameTexture;
+                MusicCue = data.MusicCue != null ? data.MusicCue : "crane_game";
+                FastMusicCue = data.FastMusicCue != null ? data.FastMusicCue : "crane_game_fast";
+                PrizeDataKey = data.PrizeDataEntry!;
+            }
+            virtualCurrency = currency == "coins" ? false : true;
         }
-        virtualCurrency = currency == "coins" ? false : true;
 
-        Logger.Log($"\nTexture: {CraneGameTexture.Name}");
+        Logger.Log($"\nTexture: {Helper.GameContent.ParseAssetName(CraneGameTexture.ToString())}");
         Logger.Log($"\nMusic cue: {MusicCue}");
         Logger.Log($"\nFast music cue: {FastMusicCue}");
         Logger.Log($"\nPlay cost: {playCost}");
@@ -83,28 +98,47 @@ internal class ModEntry : Mod {
         var funds = virtualCurrency ? SpaceCoreApi.GetVirtualCurrencyAmount(farmer, currency) : farmer.Money;
         bool canAfford = funds >= playCost;
 
-        if (canAfford) {
-            Game1.currentLocation.createQuestionDialogue(
-                $"{Helper.Translation.Get("play.text1")} " +
-                $"{funds} {currencyDisplayName}" +
-                $"{Helper.Translation.Get("play.text2")} {playCost} {currencyDisplayName} " +
-                $"{Helper.Translation.Get("play.text3")}\n{Helper.Translation.Get("play.text4")}",
-                Game1.currentLocation.createYesNoResponses(),
-                CraneGameAnswer
-            );
+        string questionText = null!;
+        if (virtualCurrency) {
+            if (currencyDisplayName != null) {
+                questionText = I18n.PlayVirtual_Text(playCost, currencyDisplayName, funds);
+            } else {
+                questionText = I18n.PlayVirtual_Text(playCost, currency, funds);
+            }
         } else {
-            Game1.drawObjectDialogue(
-                $"{Helper.Translation.Get("play.text1")} " +
-                $"{funds} {currencyDisplayName}" +
-                $"{Helper.Translation.Get("play.text2")} {playCost} {currencyDisplayName} " +
-                $"{Helper.Translation.Get("play.text3")}");
+            if (currencyDisplayName != null) {
+                questionText = I18n.Play_Text2(playCost, currencyDisplayName);
+            } else {
+                questionText = I18n.Play_Text1(playCost);
+            }
+        }
+
+        if (canAfford) {
+            Game1.currentLocation.createQuestionDialogue(questionText, Game1.currentLocation.createYesNoResponses(), CraneGameAnswer);
+        } else {
+            string dialogueText;
+            if (virtualCurrency) {
+                if (currencyDisplayName != null) {
+                    dialogueText = I18n.PlayVirtualUnaffordable_Text(playCost, currencyDisplayName, funds);
+                } else {
+                    dialogueText = I18n.PlayVirtualUnaffordable_Text(playCost, currency, funds);
+                }
+            } else {
+                if (currencyDisplayName != null) {
+                    dialogueText = I18n.PlayUnaffordable_Text2(playCost, currencyDisplayName);
+                } else {
+                    dialogueText = I18n.PlayUnaffordable_Text1(playCost);
+                }
+            }
+
+            Game1.drawObjectDialogue(dialogueText);
         }
 
         return true;
     }
 
     void CraneGameAnswer(Farmer who, string whichAnswer) {
-        if (!(whichAnswer.ToLower() == "yes")) {
+        if (whichAnswer.ToLower() != "yes") {
             return;
         }
 
@@ -135,8 +169,8 @@ internal class ModEntry : Mod {
             mod: ModManifest,
             getValue: () => Config.Logging,
             setValue: value => Config.Logging = value,
-            name: () => Helper.Translation.Get("console-logging.name"),
-            tooltip: () => $"{Helper.Translation.Get("console-logging.tooltip1")}\n{Helper.Translation.Get("console-logging.tooltip2")}"
+            name: I18n.ConsoleLogging_Name,
+            tooltip: () => $"{I18n.ConsoleLogging_Tooltip1}\n{I18n.ConsoleLogging_Tooltip2}"
         );
     }
 

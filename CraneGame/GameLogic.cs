@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Audio;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using StardewValley.Menus;
@@ -10,6 +11,12 @@ using Microsoft.Xna.Framework.Input;
 
 namespace BetterCraneGame.CraneGame;
 
+[SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
+[SuppressMessage("ReSharper", "InconsistentNaming")]
+[SuppressMessage("ReSharper", "FieldCanBeMadeReadOnly.Global")]
+[SuppressMessage("ReSharper", "ObjectCreationAsStatement")]
+[SuppressMessage("ReSharper", "UseObjectOrCollectionInitializer")]
+[SuppressMessage("Performance", "CA1806:Do not ignore method results")]
 public class GameLogic : CraneGameObject {
     [XmlType("CraneGame.GameStates")]
     public enum GameStates {
